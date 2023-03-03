@@ -31,7 +31,8 @@ void setup() {
   pinMode(M1_PIN, OUTPUT);
   
   setMode(0); // Set mode to normal operating mode 00
-
+  LoraSerial.println(0xAA);
+  delay(20);
 }
 
 void loop() {
@@ -41,7 +42,7 @@ void loop() {
     String input = Serial.readString();
     LoraSerial.println(input);    
   }
- 
+ //buffer is 512 bytes
   if(LoraSerial.available() > 1){//Read UART from LoRa wireless module and send to serial monitor
     String input = LoraSerial.readString();
     Serial.println(input);    
@@ -49,7 +50,7 @@ void loop() {
   delay(20);
 }
 
-
+//set lora module mode
 void setMode(int mode){
     switch (mode)
     {
@@ -75,6 +76,12 @@ void setMode(int mode){
     }
 
     delay(10);
+}
+
+//sends a byte array over lora
+void sendData(int input){
+  LoraSerial.println(input);
+  Serial.println("Sent Message:" + input);
 }
 
 
