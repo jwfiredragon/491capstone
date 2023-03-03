@@ -26,7 +26,12 @@ void setup() {
 
 void loop() {
 
-  // do nothing
+  delay(10);
+  Serial.println("try to read parameters");
+  // read current parameters
+  readParam();
+
+  while(1);
 
 }
 
@@ -35,28 +40,30 @@ void readParam(){
   
   //set sleep mode
   setMode(3);
-  
+
+  int readcmd = 0xC1;
   //send read parameters command
-  LoraSerial.print(0xC1C1C1);
-  
+ LoraSerial.print(readcmd);
+ LoraSerial.print(readcmd);
+ LoraSerial.print(readcmd);
+  //Serial.print(readcmd, HEX);
+  while(1){
   //read parameters from UART and print to serial monitor
   if(LoraSerial.available() > 1){
     String input = LoraSerial.readString();
     Serial.println(input);  }
-}
+}}
 
 // set lora module chan freq
 void setFreq(int freq){
-  setMode(3); // set mode to sleep mode 11 (change parameter mode)
+  setMode(3); // set to sleep mode 11 (modify parameters mode)
 
-  // change parameter
-  // Not-saved format
-  // 0xC2 ADDH ADDL SPED CHAN OPTION
+  // Not-saved format: 0xC2 ADDH ADDL SPED CHAN OPTION
 
   #define NOTSAVED 0xC2
-  int ADDH = 0x0H;
-  int ADDL = 0x0H;
-  int SPED = 0x1A;    //0b00011010
+  int ADDH = 0x00;
+  int ADDL = 0x00;
+  int SPED = 0x1a;    //0b00011010
   int OPTION = 0x44;  //0b01000100
   int CHAN = 0x17;    // freq = 410Mhz + CHAN (default: 0x17, 433MHz)
 
