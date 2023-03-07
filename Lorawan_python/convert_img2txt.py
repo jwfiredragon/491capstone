@@ -4,7 +4,7 @@
 # and prints the converted string to the command line.
 
 import sensor, image
-from base64 import b64encode # (or from base64 import micropython-base64)
+from base64 import b64encode # (or from micropython-base64 import b64encode)
 
 sensor.reset() # Initialize the camera sensor.
 sensor.set_pixformat(sensor.GRAYSCALE) # or sensor.GRAYSCALE
