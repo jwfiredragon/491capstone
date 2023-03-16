@@ -1,16 +1,13 @@
- // Uploaded by: Nicole Campbell
+// Uploaded by: Nicole Campbell
 
-// Program: Osoyoo LoRa Tutorial — How to Use the Uart LoRa Module with Arduino
+// Program: UART LoRa Module transmit and recieve with Arduino
 // Purpose: This is an example of using the Osoyoo LoRa module with an arduino. 
 //          When the program is run on two MCU's, you can type command line text
 //          and have it sent over LoRa to the other MCU
-// Source: https://osoyoo.com/2018/07/26/osoyoo-lora-tutorial-how-to-use-the-uart-lora-module-with-arduino/
-
+// Reference source: https://osoyoo.com/2018/07/26/osoyoo-lora-tutorial-how-to-use-the-uart-lora-module-with-arduino/
 
 // For point-2-point Transmit and Receive, we need two Arduino IDE to run at the same time. 
-// So, we need to click the Arduino IDE’s icon for twice. 
-// Run both at the same time and copy the code to both the Arduino IDE.
-
+// So, we need to click the Arduino IDE icon twice. Uplad the code to both Arduino IDE and run both at the same time.
 
 #include <SoftwareSerial.h>
 
@@ -21,7 +18,6 @@
 #define TXD_PIN 2
 
 SoftwareSerial LoraSerial(TXD_PIN, RXD_PIN); //TX, RX
-// (Send and Receive)
 
 void setup() {
   Serial.begin(9600);
@@ -31,26 +27,31 @@ void setup() {
   pinMode(M1_PIN, OUTPUT);
   
   setMode(0); // Set mode to normal operating mode 00
-  LoraSerial.println(0xAA);
-  delay(20);
 }
 
 void loop() {
   
+// ~~~~~ Reading ~~~~~
+//  if(Serial.available() > 0){//Read from serial monitor and send over UART to LoRa wireless module
+//    String input = Serial.readString();
+//    LoraSerial.print(input);    
+//  }
+
+// ~~~~~ Writing ~~~~~
+ // Lora buffer is 512 bytes
+  //if(LoraSerial.available() > 1){ // Read UART from LoRa module and send to serial monitor
+  while(LoraSerial.available() > 1){
+    //String input = LoraSerial.readString();
+    //Serial.print(input); 
+    Serial.write(LoraSerial.read());
+  }
+
   
-  if(Serial.available() > 0){//Read from serial monitor and send over UART to LoRa wireless module
-    String input = Serial.readString();
-    LoraSerial.println(input);    
-  }
- //buffer is 512 bytes
-  if(LoraSerial.available() > 1){//Read UART from LoRa wireless module and send to serial monitor
-    String input = LoraSerial.readString();
-    Serial.println(input);    
-  }
-  delay(20);
 }
 
-//set lora module mode
+
+
+// ~~~~~ Set lora module mode ~~~~~
 void setMode(int mode){
     switch (mode)
     {
@@ -75,18 +76,5 @@ void setMode(int mode){
       return;
     }
 
-    delay(10);
+    delay(20);
 }
-
-//sends a byte array over lora
-void sendData(int input){
-  LoraSerial.println(input);
-  Serial.println("Sent Message:" + input);
-}
-
-
-// After above operations are completed, click the upload button.
-// Once it is done with uploading, open up the Serial Monitor at each side. 
-// Now, you can try to type some words at the Serial Monitor and wait for it to appear at another side. 
-// For example in my picture, when I type “123” in Serial Monitor COM16, 
-// it will be sent over and appear at Serial Monitor COM5.
