@@ -16,16 +16,26 @@ from Maix import GPIO
 from time import sleep_ms
 import sensor, image
 import ubinascii
-from math import floor
+from math import floor, ceil
+from board import board_info
 
 # ~~~~~ Set mode pins ~~~~~
 
     # "class GPIO(ID, MODE, PULL, VALUE)"
 
-#p_M0 = GPIO(GPIOHS31, GPIO.OUT, GPIO.PULL_NONE)
-#p_M1 = GPIO(GPIOHS32, GPIO.OUT, GPIO.PULL_NONE)
-#p_M0.value(0)
-#p_M1.value(0)
+
+fm.register(31, fm.fpioa.GPIO0, force=True)     #M0
+fm.register(32, fm.fpioa.GPIO2, force=True)    #M1
+fm.register(35, fm.fpioa.GPIOHS2)               #AUX
+
+pinM0 = GPIO(GPIO.GPIO0, GPIO.OUT)
+pinM1 = GPIO(GPIO.GPIO2, GPIO.OUT)
+AUX = GPIO(GPIO.GPIOHS2, GPIO.IN)
+
+# Set M0 M1 to Mode 00
+pinM0.value(0)
+pinM1.value(0)
+
 
 # ~~~~~ Setup ~~~~~
 fm.register(33,fm.fpioa.UART1_TX)   # UART1_TX connects to Rxd
@@ -45,31 +55,35 @@ sensor.skip_frames(time = 1000) # Give the user time to get ready.
 
 print("\nTaking a picture.\n")
 image = sensor.snapshot()
+image.save('reading.jpg')
+
+with open('/sd/reading.jpg', 'rb') as img:
+    iraw = img.read()
+    ibytes = ubinascii.b2a_base64(iraw)
+    istr = str(ibytes)  #[2:-3]
 
 
 
 # ~~~~~ Writing ~~~~~
 
-LoRa_buf = 500  # LoraWAN buffer is 512 bytes
+LoRa_buf = 256  # LoraWAN buffer is 512 bytes
 
-image = image.compressed(quality=20)        # compress image to reduce size
-ibytes = image.to_bytes()                   # convert image to binary
-print("bytes length: %d bytes[0]: " %(len(jpeg_bytes))  # print byte length
-istr = (ubinascii.hexlify(ibytes))          # convert binary to hex
+#image = image.compressed(quality=20)        # compress image to reduce size
+#ibytes = image.to_bytes()                   # convert image to binary
+#print("bytes length: %d" %(len(ibytes)))    # print byte length
+#istr = (ubinascii.hexlify(ibytes))          # convert binary to hex
 
 write_str = istr        # data to print/transmit
 print("Size of image string is: ", len(write_str),"\n\n")   # print length of transmitted string
-for i in range(floor(len(write_str)/LoRa_buf)):             # send 500 bytes at a time
+for i in range(ceil(len(write_str)/LoRa_buf)):             # send 500 bytes at a time
     print(write_str[i*LoRa_buf:(i+1)*LoRa_buf], end='')     # Print hex string. Note that this will print b'...' each loop
-    #uart_A.write(write_str[i*LoRa_buf:(i+1)*LoRa_buf])    # send over UART
-    sleep_ms(20)
+    uart_A.write(write_str[i*LoRa_buf:(i+1)*LoRa_buf])      # send over UART
+    while(AUX.value() == 0):                                # wait for AUX pin rising edge
+        pass
+    sleep_ms(10)
 
 print("\nImage string complete.\n")
 
-#write_str = "Example. "
-#for i in range(10):
-    #uart_A.write(write_str)
-    #sleep_ms(20)
 
 sleep_ms(500)
 
