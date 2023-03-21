@@ -6,7 +6,7 @@
 
 from fpioa_manager import fm
 from machine import UART
-fm.register(15,fm.fpioa.UART1_TX) 
+fm.register(15,fm.fpioa.UART1_TX)
 fm.register(17,fm.fpioa.UART1_RX)
 fm.register(9,fm.fpioa.UART2_TX)
 fm.register(10,fm.fpioa.UART2_RX)
@@ -20,7 +20,7 @@ for i in range(20):
     read_str = read_data.decode('utf-8')
     print("string = ",read_str)
     if read_str == write_str:
-        print("baudrate:115200 bits:8 parity:None stop:1 ---check Successfully")
+        print("baudrate:9600 bits:8 parity:None stop:1 ---check Successfully")
 
 # clean up
 uart_A.deinit()
