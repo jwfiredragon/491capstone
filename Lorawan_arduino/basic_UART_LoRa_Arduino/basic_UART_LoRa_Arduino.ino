@@ -32,17 +32,15 @@ void setup() {
 void loop() {
   
 // ~~~~~ Reading ~~~~~
-//  if(Serial.available() > 0){//Read from serial monitor and send over UART to LoRa wireless module
-//    String input = Serial.readString();
-//    LoraSerial.print(input);    
-//  }
+  if(Serial.available() > 0){//Read from serial monitor and send over UART to LoRa wireless module
+    String input = Serial.readString();
+    LoraSerial.print(input);    
+  }
 
 // ~~~~~ Writing ~~~~~
  // Lora buffer is 512 bytes
   //if(LoraSerial.available() > 1){ // Read UART from LoRa module and send to serial monitor
   while(LoraSerial.available() > 1){
-    //String input = LoraSerial.readString();
-    //Serial.print(input); 
     Serial.write(LoraSerial.read());
   }
 
