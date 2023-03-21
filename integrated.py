@@ -65,12 +65,12 @@ def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
     max_index=plist.index(pmax)
     kpu.fmap_free(fmap)
     img.save("example.jpg")
-    #pic_stream=bytearray(img, "utf-8")
+    pic_stream=bytearray(img, "utf-8")
     file_path = "uft8encodding.txt"
-    #with open(file_path,"w") as file:
-    #    file.write(pic_stream)
-    #file.close()
-    #print(pic_stream)
+    with open(file_path,"w") as file:
+        file.write(pic_stream)
+    file.close()
+    print(pic_stream)
     #machine.idle()
     #print(test_stream)
     pin6.value(1)
