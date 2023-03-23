@@ -15,49 +15,57 @@ from machine import UART
 from time import sleep_ms
 import sensor, image
 import ubinascii
+from math import floor
 
-# Setup
-fm.register(33,fm.fpioa.UART1_TX) #note that Uart1_TX connects to Rxd
-fm.register(34,fm.fpioa.UART1_RX)
-
+# ~~~~~ Setup ~~~~~
+fm.register(33,fm.fpioa.UART1_TX)   # UART1_TX connects to Rxd
+fm.register(34,fm.fpioa.UART1_RX)   # UART1_RX connects to Txd
 
 uart_A = UART(UART.UART1, 9600, 8, None, 1, timeout=1000, read_buf_len=4096)
 
-## take picture
 
-#sensor.reset() # Initialize the camera sensor.
-#sensor.set_pixformat(sensor.GRAYSCALE)
-#sensor.set_framesize(sensor.QVGA) # or sensor.QQVGA (or others)
-#sensor.skip_frames(time = 2000) # Let new settings take affect.
+# ~~~~~ Take picture ~~~~~
 
-#sensor.skip_frames(time = 2000) # Give the user time to get ready.
+sensor.reset() # Initialize the camera sensor.
+sensor.set_pixformat(sensor.GRAYSCALE)
+sensor.set_framesize(sensor.QVGA) # or sensor.QQVGA (or others)
+sensor.skip_frames(time = 2000) # Let new settings take affect.
 
-#print("Taking a picture.")
-#image = sensor.snapshot()
+sensor.skip_frames(time = 1000) # Give the user time to get ready.
+
+print("Taking a picture.")
+image = sensor.snapshot()
 
 
-#ibytes = ubinascii.b2a_base64(image)
-#istr = str(ibytes)[2:-3]
+ibytes = ubinascii.b2a_base64(image)
+istr = str(ibytes)[2:-3]
+print(istr)
 
 
 # ~~~~~ Writing ~~~~~
 
-#write_str = base64.b64encode("example.jpg")
-#for i in range(floor(len(write_str)/500)): #send 500 bytes at a time
-    #uart_A.write(write_str[i*500:i*500+501])
-    #time.sleep_ms(10)
+LoRa_buf = 500
 
-write_str = "Example. "
-for i in range(10):
-    uart_A.write(write_str)
-    sleep_ms(20)
+# write_str = istr
+# print("Size of image string is: ", len(write_str),"\n\n")
+# for i in range(floor(len(write_str)/LoRa_buf)): #send 500 bytes at a time
+#     print(write_str[i*LoRa_buf:(i+1)*LoRa_buf])
+#     uart_A.write(write_str[i*LoRa_buf:(i+1)*LoRa_buf])
+#     sleep_ms(10)
+
+print("\nImage string complete.\n")
+
+#write_str = "Example. "
+#for i in range(10):
+    #uart_A.write(write_str)
+    #sleep_ms(20)
 
 sleep_ms(500)
 
 
 # ~~~~~ Reading ~~~~~
-#for i in range(60):
-while(True):
+for i in range(100):
+#while(True):
 
     if uart_A.any():
         read_data = uart_A.read()
@@ -69,7 +77,7 @@ while(True):
     sleep_ms(10)
 
 
-# clean up
+# ~~~~~ Clean up ~~~~~
 uart_A.deinit()
 del uart_A
 
