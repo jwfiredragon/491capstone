@@ -101,7 +101,11 @@ def LED_OFF():
     pin8.value(0)
 
 LED_ON()
-delay(500)
+sleep_ms(250)
+LED_OFF()
+sleep_ms(250)
+LED_ON()
+sleep_ms(250)
 LED_OFF()
 
 
@@ -127,7 +131,9 @@ while(True):
     sensor.skip_frames(time = 1000) # Give the user time to get ready.
 
     print("\nTaking a picture.\n")
+    LED_ON()
     image = sensor.snapshot()
+    LED_OFF()
     image2 = image.copy((100,100,300,200))
     image2.save('reading.jpg')
 
