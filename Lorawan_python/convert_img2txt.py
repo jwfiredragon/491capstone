@@ -78,6 +78,15 @@ fm.register(34,fm.fpioa.UART1_RX)   # UART1_RX connects to Txd
 
 uart_LoRa = UART(UART.UART1, 9600, 8, None, 1, timeout=1000, read_buf_len=4096)
 
+
+#LEDs
+fm.register(6, fm.fpioa.GPIO3, force=True)
+fm.register(7, fm.fpioa.GPIO4, force=True)
+fm.register(8, fm.fpioa.GPIO5)
+pin6 = GPIO(GPIO.GPIO3, GPIO.OUT)
+pin7 = GPIO(GPIO.GPIO4, GPIO.OUT)
+pin8 = GPIO(GPIO.GPIO5, GPIO.OUT)
+
 def LED_ON():
 
     pin6.value(1)
