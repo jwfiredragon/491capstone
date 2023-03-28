@@ -52,6 +52,8 @@ def UART_read_search(search_string):
             return 1
     return 0
 
+
+
 #~~~~~~~~~~~~~~~~~~~~~~ start of program ~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -76,6 +78,18 @@ fm.register(34,fm.fpioa.UART1_RX)   # UART1_RX connects to Txd
 
 uart_LoRa = UART(UART.UART1, 9600, 8, None, 1, timeout=1000, read_buf_len=4096)
 
+def LED_ON():
+
+    pin6.value(1)
+    pin7.value(1)
+    pin8.value(1)
+
+
+def LED_OFF():
+
+    pin6.value(0)
+    pin7.value(0)
+    pin8.value(0)
 
 LED_ON()
 delay(500)
