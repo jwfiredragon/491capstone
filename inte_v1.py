@@ -9,7 +9,7 @@ from board import board_info
 import sensor, image, time, math
 import KPU as kpu
 import utime
-import image
+
 
 
 uart_LoRa = UART(UART.UART1, 9600, 8, None, 1, timeout=1000, read_buf_len=4096)
@@ -70,9 +70,18 @@ def UART_read_search(search_string):
     return 0
 
 
+def LED_ON():
+
+    pin6.value(1)
+    pin7.value(1)
+    pin8.value(1)
 
 
+def LED_OFF():
 
+    pin6.value(0)
+    pin7.value(0)
+    pin8.value(0)
 
 
 
@@ -104,21 +113,8 @@ def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
     max_index=plist.index(pmax)
     kpu.fmap_free(fmap)
     image2 = img0.copy((1,1, dx-1, dy-1))
-    image2.save('reading.jpg')
+    image2.save('reading1.jpg')
 
-#    pin6.value(1)
-#    pin7.value(1)
-#    pin8.value(1)
-#    print("LEDs ON")
-
-#    sleep_ms(500)
-
-#    pin6.value(0)
-#    pin7.value(0)
-#    pin8.value(0)
-#    print("LEDs OFF")
-
-#    sleep_ms(500)
     return max_index, pmax
 
 
@@ -158,13 +154,6 @@ while(True):
         class_num, pmax = mnist_run(img, dx, dy, dis,\
             x00 =x00, y00 = y00,\
             nnn=i)
-#        if pmax > p_thre:
-#            num_list[i] = class_num
-#            p_list[i] = pmax
-#    for i in range(0,1):
-#        if i == 1:
-#            x00 = x00
-#            dy = dy
 #...................................LoRa
     sleep_ms(500)
 
