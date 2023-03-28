@@ -123,19 +123,20 @@ setup_camera()
 setup_pins()
 
 
-
-# ~~~~~ Wait for Request ~~~~~
-
-sleep_ms(500)   # for debug
-
-while(UART_read_search("Image request") == 0):
-    sleep_ms(10)
-
-uart_LoRa.write("Request received")
-
-
 #...........................................Main................................
 while(True):
+
+
+#.................................Wait for Request
+
+    sleep_ms(500)   # for debug
+
+    while(UART_read_search("Image request") == 0):
+        sleep_ms(10)
+
+    uart_LoRa.write("Request received")
+
+#...................................Take image
     count_0 = 0
     count_4 = 0
     clock.tick()                    # Update the FPS clock.
