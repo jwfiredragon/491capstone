@@ -77,6 +77,11 @@ fm.register(34,fm.fpioa.UART1_RX)   # UART1_RX connects to Txd
 uart_LoRa = UART(UART.UART1, 9600, 8, None, 1, timeout=1000, read_buf_len=4096)
 
 
+LED_ON()
+delay(500)
+LED_OFF()
+
+
 while(True):
 
     # ~~~~~ Wait for Request ~~~~~
