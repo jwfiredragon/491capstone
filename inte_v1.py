@@ -21,31 +21,31 @@ LoRa_buf = 128
 
 
 
-def setup_pins():
-    fm.register(31, fm.fpioa.GPIO0, force=True)     #M0
-    fm.register(32, fm.fpioa.GPIO2, force=True)    #M1
-    fm.register(35, fm.fpioa.GPIOHS2)               #AUX
+# Pin Setup
+fm.register(31, fm.fpioa.GPIO0, force=True)     #M0
+fm.register(32, fm.fpioa.GPIO2, force=True)    #M1
+fm.register(35, fm.fpioa.GPIOHS2)               #AUX
 
-    fm.register(6, fm.fpioa.GPIO3, force=True)
-    fm.register(7, fm.fpioa.GPIO4, force=True)
-    fm.register(8, fm.fpioa.GPIO5)
+fm.register(6, fm.fpioa.GPIO3, force=True)
+fm.register(7, fm.fpioa.GPIO4, force=True)
+fm.register(8, fm.fpioa.GPIO5)
 
-    fm.register(33,fm.fpioa.UART1_TX)   # UART1_TX connects to Rxd
-    fm.register(34,fm.fpioa.UART1_RX)   # UART1_RX connects to Txd
+fm.register(33,fm.fpioa.UART1_TX)   # UART1_TX connects to Rxd
+fm.register(34,fm.fpioa.UART1_RX)   # UART1_RX connects to Txd
 
 
-    uart_B = UART(UART.UART2, 115200, 8, None, 1, timeout=10)
+uart_B = UART(UART.UART2, 115200, 8, None, 1, timeout=10)
 
-    pinM0 = GPIO(GPIO.GPIO0, GPIO.OUT)
-    pinM1 = GPIO(GPIO.GPIO2, GPIO.OUT)
-    AUX = GPIO(GPIO.GPIOHS2, GPIO.IN)
+pinM0 = GPIO(GPIO.GPIO0, GPIO.OUT)
+pinM1 = GPIO(GPIO.GPIO2, GPIO.OUT)
+AUX = GPIO(GPIO.GPIOHS2, GPIO.IN)
 
-    pinM0.value(0)
-    pinM1.value(0)
+pinM0.value(0)
+pinM1.value(0)
 
-    pin6 = GPIO(GPIO.GPIO3, GPIO.OUT)
-    pin7 = GPIO(GPIO.GPIO4, GPIO.OUT)
-    pin8 = GPIO(GPIO.GPIO5, GPIO.OUT)
+pin6 = GPIO(GPIO.GPIO3, GPIO.OUT)
+pin7 = GPIO(GPIO.GPIO4, GPIO.OUT)
+pin8 = GPIO(GPIO.GPIO5, GPIO.OUT)
 
 def setup_camera():
     sensor.reset()
@@ -139,7 +139,7 @@ def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
 
 setup_camera()
 
-setup_pins()
+#setup_pins()
 
 
 #...........................................Main................................
@@ -163,7 +163,6 @@ while(True):
     #img.mean(1, threshold=True, offset=5, invert=True)
     #img.binary([(100,255)], invert = True)
     #img.erode(1)
-    #sensor.skip_frames(time = 2000)
     x00 = 91
     y00 = 50
     dx = 100
@@ -176,8 +175,6 @@ while(True):
             nnn=i)
 #...................................LoRa
     sleep_ms(500)
-
-    read_str=""
 
     UART_read_search("Image received")
     sleep_ms(10)
