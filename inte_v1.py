@@ -166,9 +166,6 @@ while(True):
     count_0 = 0
     count_4 = 0
     clock.tick()                    # Update the FPS clock.
-    LED_ON()
-    img = sensor.snapshot()         # Take a picture and return the image.
-    LED_OFF()
     #img.mean(1, threshold=True, offset=5, invert=True)
     #img.binary([(100,255)], invert = True)
     #img.erode(1)
@@ -178,10 +175,13 @@ while(True):
     dy = 140
     dis = 70
     p_thre = 0.85
+
+    LED_ON()
     for i in range(0,1):
         class_num, pmax = mnist_run(img, dx, dy, dis,\
             x00 =x00, y00 = y00,\
             nnn=i)
+    LED_OFF()
 #...................................LoRa
     sleep_ms(500)
 
