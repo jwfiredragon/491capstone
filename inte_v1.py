@@ -84,6 +84,25 @@ def LED_OFF():
     pin8.value(0)
 
 
+def send_image():
+
+    LoRa_buf = 128  # LoraWAN buffer is 512 bytes
+
+    with open('/sd/reading.jpg', 'rb') as img:
+        iraw = img.read()
+        ibytes = ubinascii.hexlify(iraw)
+
+    write_str = ibytes + b'x'        # data to print/transmit
+
+    print("Size of image string is: ", len(write_str),"\n\n")   # print length of transmitted string - debug
+
+    for i in range(ceil(len(write_str)/LoRa_buf)):             # send 500 bytes at a time
+        print(write_str[i*LoRa_buf:(i+1)*LoRa_buf], end='')     # Print hex string. Note that this will print b'...' each loop
+        uart_LoRa.write(write_str[i*LoRa_buf:(i+1)*LoRa_buf])      # send over UART
+        while(AUX.value() == 0):                                # wait for AUX pin rising edge
+            pass
+
+    print("\nImage string complete.\n")     # debug
 
 
 def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
