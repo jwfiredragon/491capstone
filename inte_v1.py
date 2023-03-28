@@ -59,6 +59,7 @@ def setup_camera():
 
 
 
+# returns true if search_string was received from server
 def UART_read_search(search_string):
 
     if uart_LoRa.any():
@@ -88,7 +89,7 @@ def send_image():
 
     LoRa_buf = 128  # LoraWAN buffer is 512 bytes
 
-    with open('/sd/reading.jpg', 'rb') as img:
+    with open('/sd/reading1.jpg', 'rb') as img:
         iraw = img.read()
         ibytes = ubinascii.hexlify(iraw)
 
@@ -137,7 +138,7 @@ def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
     return max_index, pmax
 
 
-setup_camera()
+
 
 #setup_pins()
 
@@ -148,18 +149,26 @@ while(True):
 
 #.................................Wait for Request
 
-    sleep_ms(500)   # for debug
+    LED_ON()        #for debug
+    sleep_ms(250)
+    LED_OFF()
+    sleep_ms(250)
+    LED_ON()
+    sleep_ms(250)
+    LED_OFF()
 
     while(UART_read_search("Image request") == 0):
         sleep_ms(10)
 
-    uart_LoRa.write("Request received")
 
 #...................................Take image
+    setup_camera()
     count_0 = 0
     count_4 = 0
     clock.tick()                    # Update the FPS clock.
+    LED_ON()
     img = sensor.snapshot()         # Take a picture and return the image.
+    LED_OFF()
     #img.mean(1, threshold=True, offset=5, invert=True)
     #img.binary([(100,255)], invert = True)
     #img.erode(1)
@@ -176,12 +185,10 @@ while(True):
 #...................................LoRa
     sleep_ms(500)
 
-    UART_read_search("Image received")
-    sleep_ms(10)
     send_image()
-    sleep_ms(500)
 
-    read_str=""
+    sleep_ms(2000)
+
     UART_read_search("Image received")
     sleep_ms(10)
 
