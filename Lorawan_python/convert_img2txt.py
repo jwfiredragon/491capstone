@@ -57,8 +57,6 @@ def UART_read_search(search_string):
 
 
 # ~~~~~ Lora Setup ~~~~~
-
-
 fm.register(31, fm.fpioa.GPIO0)         #M0
 pinM0 = GPIO(GPIO.GPIO0, GPIO.OUT)
 
