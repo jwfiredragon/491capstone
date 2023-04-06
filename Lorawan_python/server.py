@@ -1,5 +1,6 @@
 import binascii
 import io
+import pytesseract
 from PIL import Image
 from serial import Serial
 
@@ -14,14 +15,18 @@ while True:
     img_received = False
     while not img_received:
         line = ser.readline()
+        print('...')
         if line is not b'':
             # hack for buffer character dropping
             if line[0] == 120:
                 line = line[1:]
+            if line[-1] == 120:
+                line = line[:-2]
 
             ibytes = binascii.unhexlify(line)
             image = Image.open(io.BytesIO(ibytes))
             image.save('./ser_out.jpg')
+            text = pytesseract.image_to_string('ser_out.jpg', lang='lets')
             ser.write('Image received'.encode())
-            print('Image received.')
+            print(f'Image received. Text: {text}')
             img_received = True
