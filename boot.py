@@ -89,11 +89,14 @@ def send_image():
 
     LoRa_buf = 128  # LoraWAN buffer is 512 bytes
 
-    with open('/sd/reading1.jpg', 'rb') as img:
+    with open('/sd/reading1.bmp', 'rb') as img:
         iraw = img.read()
         ibytes = ubinascii.hexlify(iraw)
 
-    write_str = ibytes + b'x'        # data to print/transmit
+    id = bytes(machine.unique_id() + ' ', 'utf-8')
+    now = time.localtime()
+    timestamp = bytes(f'{now[0]}/{now[1]}/{now[2]}-{now[3]}:{now[4]} ', 'utf-8')
+    write_str = id + timestamp + ibytes + b'x'        # data to print/transmit
 
     print("Size of image string is: ", len(write_str),"\n\n")   # print length of transmitted string - debug
 
@@ -133,7 +136,7 @@ def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
     max_index=plist.index(pmax)
     kpu.fmap_free(fmap)
     image2 = img0.copy((1,1, dx-1, dy-1))
-    image2.save('reading1.jpg')
+    image2.save('reading1.bmp')
 
     return max_index, pmax
 
