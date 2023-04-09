@@ -96,7 +96,7 @@ def send_image():
 
     id = bytes(machine.unique_id() + ' ', 'utf-8')
     now = time.localtime()
-    timestamp = bytes(f'{now[0]}/{now[1]}/{now[2]}-{now[3]}:{now[4]} ', 'utf-8')
+    timestamp = bytes(str(now[0])+'/'+str(now[1])+'/'+str(now[2])+'-'+str(now[3])+':'+str(now[4])+' ', 'utf-8')
     write_str = id + timestamp + ibytes + b'x'        # data to print/transmit
     # string padded with trailing 'x' as a workaround for bug where transmission sometimes drops last byte and adds it to the start of the next transmission
 
