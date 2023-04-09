@@ -11,7 +11,7 @@ import KPU as kpu
 import utime
 
 
-
+# Initializing LoRA port
 uart_LoRa = UART(UART.UART1, 9600, 8, None, 1, timeout=1000, read_buf_len=4096)
 #task = kpu.load("/sd/paste_mnist.kmodel")
 task = kpu.load("/sd/KPU/mnist/mnist.kmodel")
@@ -84,31 +84,33 @@ def LED_OFF():
     pin7.value(0)
     pin8.value(0)
 
-
+# Opens saved image file and sends it to server as bytes, along with timestamp and device ID
 def send_image():
 
     LoRa_buf = 128  # LoraWAN buffer is 512 bytes
 
+    # load image from SD card and convert it to bytes
     with open('/sd/reading1.jpg', 'rb') as img:
         iraw = img.read()
         ibytes = ubinascii.hexlify(iraw)
 
     id = bytes(machine.unique_id() + ' ', 'utf-8')
     now = time.localtime()
-    timestamp = bytes(str(now[0])+'/'+str(now[1])+'/'+str(now[2])+'-'+str(now[3])+':'+str(now[4])+' ', 'utf-8')
+    timestamp = bytes(f'{now[0]}/{now[1]}/{now[2]}-{now[3]}:{now[4]} ', 'utf-8')
     write_str = id + timestamp + ibytes + b'x'        # data to print/transmit
+    # string padded with trailing 'x' as a workaround for bug where transmission sometimes drops last byte and adds it to the start of the next transmission
 
     print("Size of image string is: ", len(write_str),"\n\n")   # print length of transmitted string - debug
 
     for i in range(ceil(len(write_str)/LoRa_buf)):             # send 500 bytes at a time
-        print(write_str[i*LoRa_buf:(i+1)*LoRa_buf], end='')     # Print hex string. Note that this will print b'...' each loop
+        print(write_str[i*LoRa_buf:(i+1)*LoRa_buf], end='')     # Print hex string for debugging. Note that this will print b'...' each loop
         uart_LoRa.write(write_str[i*LoRa_buf:(i+1)*LoRa_buf])      # send over UART
-        while(AUX.value() == 0):                                # wait for AUX pin rising edge
+        while(AUX.value() == 0):                                # wait for AUX pin rising edge (ie previous write finished)
             pass
 
     print("\nImage string complete.\n")     # debug
 
-
+# Preprocesses image by reducing to grayscale and cropping, then saves to SD card
 def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
     if nnn == 4:
         x00 = x00
@@ -137,6 +139,7 @@ def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
     kpu.fmap_free(fmap)
     image2 = img0.copy((1,1, dx-1, dy-1))
     image2.save('reading1.jpg')
+    # save image to SD card and load when sending to ensure it's sent in the .jpg format
 
     return max_index, pmax
 
