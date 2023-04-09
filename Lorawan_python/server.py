@@ -25,9 +25,9 @@ while True:
                 line = line[:-2]
 
             # msg[0] = device ID, msg[1] = timestamp, msg[2] = image bytes
-            msg = line.split(' ')
+            msg = line.split(b' ')
 
-            # Convert the received message into a JPG image
+            # Convert the received message into an image
             ibytes = binascii.unhexlify(msg[2])
             image = Image.open(io.BytesIO(ibytes))
 
@@ -44,6 +44,6 @@ while True:
 
             # Perform OCR on image and print result
             text = pytesseract.image_to_string('ser_out.bmp', lang='lets',  config='-c tessedit_char_whitelist=0123456789')
-            print(f'Reading from ID {msg[0]} at {msg[1]}: {text}')
+            print(f'Reading from ID {msg[0].decode('utf-8')} at {msg[1].decode('utf-8')}: {text}')
             
             img_received = True
