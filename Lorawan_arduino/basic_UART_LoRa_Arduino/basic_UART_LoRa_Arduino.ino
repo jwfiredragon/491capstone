@@ -1,16 +1,14 @@
-// Uploaded by: Nicole Campbell
+// Created by: Nicole Campbell
 
 // Program: UART LoRa Module transmit and recieve with Arduino
-// Purpose: This is an example of using the Osoyoo LoRa module with an arduino. 
-//          When the program is run on two MCU's, you can type command line text
-//          and have it sent over LoRa to the other MCU
-// Reference source: https://osoyoo.com/2018/07/26/osoyoo-lora-tutorial-how-to-use-the-uart-lora-module-with-arduino/
+// Purpose: Writing: Reads from serial monitor and send over UART to LoRa wireless module, and
+//          Reading: Reads UART data from LoRa module and sends to serial port where server.py can receive
 
-// For point-2-point Transmit and Receive, we need two Arduino IDE to run at the same time. 
-// So, we need to click the Arduino IDE icon twice. Uplad the code to both Arduino IDE and run both at the same time.
+
 
 #include <SoftwareSerial.h>
 
+// Lora module pins
 #define M0_PIN  6
 #define M1_PIN  5
 #define AUX_PIN A0
@@ -76,3 +74,5 @@ void setMode(int mode){
 
     delay(20);
 }
+
+// Reference: https://osoyoo.com/2018/07/26/osoyoo-lora-tutorial-how-to-use-the-uart-lora-module-with-arduino/
