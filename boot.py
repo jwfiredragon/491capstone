@@ -55,7 +55,7 @@ def setup_camera():
     sensor.set_auto_gain(True)
     sensor.set_auto_whitebal(True)
     sensor.set_gainceiling(2)
-    sensor.skip_frames(time=2000)
+    sensor.skip_frames(time=5000)   #debug -> 2000
 
 
 
@@ -94,7 +94,7 @@ def send_image():
         iraw = img.read()
         ibytes = ubinascii.hexlify(iraw)
 
-    id = bytes(machine.unique_id() + ' ', 'utf-8')
+    id = machine.unique_id() + b' '
     now = time.localtime()
     timestamp = bytes(str(now[0])+'/'+str(now[1])+'/'+str(now[2])+'-'+str(now[3])+':'+str(now[4])+' ', 'utf-8')
     write_str = id + timestamp + ibytes + b'x'        # data to print/transmit
@@ -126,7 +126,6 @@ def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
         for dy0 in range(dy):
             a0 = img0.get_pixel(dx0,dy0)
             img.set_pixel(x00+dis*nnn+dx0,y00+nnn*0+dy0,a0)
-    #img1 = img0.copy((1,1, dx-1, dy-1))
     img1 = img0
     img1 = img1.resize(28,28)
     img1 = img1.to_grayscale(0)
@@ -176,13 +175,12 @@ while(True):
     img=sensor.snapshot()
     LED_OFF()
 # Update the FPS clock.
-    #img.mean(1, threshold=True, offset=5, invert=True)
-    #img.binary([(100,255)], invert = True)
-    #img.erode(1)
-    x00 = 0
+
+    # Image crop settings
+    x00 = 60
     y00 = 140
-    dx = 240
-    dy = 80
+    dx = 300
+    dy = 160       #80
     dis = 25
     p_thre = 0.95
 
