@@ -4,7 +4,7 @@ import pytesseract
 from PIL import Image, ImageFilter, ImageEnhance
 from serial import Serial
 
-ser = Serial('COM5', 9800, timeout=1)
+ser = Serial('COM3', 9800, timeout=1)
 
 while True:
     input('Enter anything to request a reading: ')
@@ -44,6 +44,8 @@ while True:
 
             # Perform OCR on image and print result
             text = pytesseract.image_to_string('ser_out.bmp', lang='lets',  config='-c tessedit_char_whitelist=0123456789')
-            print(f'Reading from ID {msg[0].decode('utf-8')} at {msg[1].decode('utf-8')}: {text}')
+            message0 = msg[0].decode('utf-8')
+            message1 = msg[1].decode('utf-8')
+            print(f'Reading from ID {message0} at {message1}: {text}')
             
             img_received = True
