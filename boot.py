@@ -116,12 +116,16 @@ def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
         x00 = x00
         dy = dy
     img0 = img.copy((x00+dis*nnn,y00+nnn*0, dx, dy))
+    #mean fuzzer filtering algorithm, 10 indicated the pixels to calculate the mean, threshold indicate process or not, invert controlls black on white or vice versa
     img0.mean(10, threshold=True, offset=1, invert=0)  #A
     #img0.median(2, percentile=0.3, threshold=True, offset=-4, invert=True)
     #img0.midpoint(2, bias=0.3, threshold=True, offset=0, invert=True)
     #img0.mode(2, threshold=True, offset=0, invert=True)  #B
 
     #img0.binary([(110,255)], invert = True)
+    
+    #setup as kpu required 
+
     for dx0 in range(dx):
         for dy0 in range(dy):
             a0 = img0.get_pixel(dx0,dy0)
@@ -130,6 +134,7 @@ def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
     img1 = img1.resize(28,28)
     img1 = img1.to_grayscale(0)
     #imgl = imgl.histeq(1)
+    #run kpu
     img1.pix_to_ai()
     fmap=kpu.forward(task,img1)
     plist=fmap[:]
