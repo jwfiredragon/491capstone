@@ -1,3 +1,5 @@
+# Program: Boot file that is loaded onto board
+# Purpose: Main loop handles waiting for server request, taking a capture of image and relaying it back to server
 from fpioa_manager import fm
 from Maix import GPIO
 from time import sleep_ms
