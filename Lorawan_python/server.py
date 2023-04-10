@@ -1,3 +1,5 @@
+#Program: Basic server functionality 
+#Purpose: To send image request to device and perform OCR on received data
 import binascii
 import io
 import pytesseract
