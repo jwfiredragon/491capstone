@@ -1,8 +1,8 @@
 # Program: Boot file that is loaded onto board
 # Purpose: Main loop handles waiting for server request, taking a capture of image and relaying it back to server
 from fpioa_manager import fm
-from Maix import GPIO
 from time import sleep_ms
+from Maix import GPIO
 from machine import UART
 import machine
 import ubinascii
@@ -15,32 +15,36 @@ import utime
 
 # Initializing LoRA port
 uart_LoRa = UART(UART.UART1, 9600, 8, None, 1, timeout=1000, read_buf_len=4096)
-#task = kpu.load("/sd/paste_mnist.kmodel")
+LoRa_buf = 128  # LoraWAN buffer is 512 bytes
+#Initializing KPU
 task = kpu.load("/sd/KPU/mnist/mnist.kmodel")
 info=kpu.netinfo(task)
 clock = time.clock()                # Create a clock object to track the FPS.
-LoRa_buf = 128
 
 
 
 # Pin Setup
 fm.register(31, fm.fpioa.GPIO0, force=True)     #M0
-fm.register(32, fm.fpioa.GPIO2, force=True)    #M1
+fm.register(32, fm.fpioa.GPIO2, force=True)     #M1
 fm.register(35, fm.fpioa.GPIOHS2)               #AUX
+
+fm.register(33,fm.fpioa.UART1_TX)   # UART1_TX connects to Rxd
+fm.register(34,fm.fpioa.UART1_RX)   # UART1_RX connects to Txd
 
 fm.register(6, fm.fpioa.GPIO3, force=True)
 fm.register(7, fm.fpioa.GPIO4, force=True)
 fm.register(8, fm.fpioa.GPIO5)
 
-fm.register(33,fm.fpioa.UART1_TX)   # UART1_TX connects to Rxd
-fm.register(34,fm.fpioa.UART1_RX)   # UART1_RX connects to Txd
 
-
-uart_B = UART(UART.UART2, 115200, 8, None, 1, timeout=10)
+#uart_B = UART(UART.UART2, 115200, 8, None, 1, timeout=10)  #unused
 
 pinM0 = GPIO(GPIO.GPIO0, GPIO.OUT)
 pinM1 = GPIO(GPIO.GPIO2, GPIO.OUT)
 AUX = GPIO(GPIO.GPIOHS2, GPIO.IN)
+
+
+pinM0.value(0)
+pinM1.value(1)
 
 pinM0.value(0)
 pinM1.value(0)
@@ -89,14 +93,12 @@ def LED_OFF():
 # Opens saved image file and sends it to server as bytes, along with timestamp and device ID
 def send_image():
 
-    LoRa_buf = 128  # LoraWAN buffer is 512 bytes
-
     # load image from SD card and convert it to bytes
     with open('/sd/reading1.jpg', 'rb') as img:
         iraw = img.read()
         ibytes = ubinascii.hexlify(iraw)
 
-    id = machine.unique_id() + b' '
+    id = ubinascii.hexlify(machine.unique_id()) + b' '       #machine.unique_id() + b' '
     now = time.localtime()
     timestamp = bytes(str(now[0])+'/'+str(now[1])+'/'+str(now[2])+'-'+str(now[3])+':'+str(now[4])+' ', 'utf-8')
     write_str = id + timestamp + ibytes + b'x'        # data to print/transmit
@@ -118,24 +120,18 @@ def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
         x00 = x00
         dy = dy
     img0 = img.copy((x00+dis*nnn,y00+nnn*0, dx, dy))
-    #mean fuzzer filtering algorithm, 10 indicated the pixels to calculate the mean, threshold indicate process or not, invert controlls black on white or vice versa
     img0.mean(10, threshold=True, offset=1, invert=0)  #A
-    #img0.median(2, percentile=0.3, threshold=True, offset=-4, invert=True)
-    #img0.midpoint(2, bias=0.3, threshold=True, offset=0, invert=True)
-    #img0.mode(2, threshold=True, offset=0, invert=True)  #B
 
-    #img0.binary([(110,255)], invert = True)
-    
-    #setup as kpu required 
+    #setup as kpu required
 
     for dx0 in range(dx):
         for dy0 in range(dy):
             a0 = img0.get_pixel(dx0,dy0)
-            img.set_pixel(x00+dis*nnn+dx0,y00+nnn*0+dy0,a0)
+            #img.set_pixel(x00+dis*nnn+dx0,y00+nnn*0+dy0,a0)
     img1 = img0
     img1 = img1.resize(28,28)
     img1 = img1.to_grayscale(0)
-    #imgl = imgl.histeq(1)
+
     #run kpu
     img1.pix_to_ai()
     fmap=kpu.forward(task,img1)
@@ -148,11 +144,6 @@ def mnist_run(img, dx, dy, dis, x00 =0, y00 = 80, nnn = 2):
     # save image to SD card and load when sending to ensure it's sent in the .jpg format
 
     return max_index, pmax
-
-
-
-
-#setup_pins()
 
 
 #...........................................Main................................
@@ -169,7 +160,7 @@ while(True):
     sleep_ms(250)
     LED_OFF()
 
-    while(UART_read_search("Image request") == 0):
+    while(UART_read_search("Image request") != 1):
         sleep_ms(10)
 
 
@@ -184,10 +175,10 @@ while(True):
 # Update the FPS clock.
 
     # Image crop settings
-    x00 = 60
+    x00 = 0
     y00 = 140
-    dx = 300
-    dy = 160       #80
+    dx = 260
+    dy = 80
     dis = 25
     p_thre = 0.95
 
